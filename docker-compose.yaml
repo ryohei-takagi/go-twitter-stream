@@ -1,0 +1,32 @@
+version: '3.7'
+services:
+  go-twitter-stream-next:
+    build:
+      context: ./docker/next
+    image: go-twitter-stream-next
+    container_name: go-twitter-stream-next
+    ports:
+      - 3000:3000
+    volumes:
+      - $PWD/next:/next
+  go-twitter-stream-nginx:
+    build:
+      context: ./docker/nginx
+    image: go-twitter-stream-nginx
+    container_name: go-twitter-stream-nginx
+    ports:
+      - 80:80
+    volumes:
+      - $PWD/docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - go-twitter-stream-next
+  go-twitter-stream-ws:
+    build:
+      context: ./docker/ws
+    image: go-twitter-stream-ws
+    container_name: go-twitter-stream-ws
+    ports:
+      - 8081:8081
+    volumes:
+      - $PWD:/go
+    command: realize start --run --server
